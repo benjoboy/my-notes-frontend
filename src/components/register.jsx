@@ -31,6 +31,7 @@ class Register extends Component {
       )
       .then((response) => {
         console.log("registration res", response);
+        this.props.handleSuccessfulAuth(response.data);
       })
       .catch((error) => {
         console.log("registration error", error);
