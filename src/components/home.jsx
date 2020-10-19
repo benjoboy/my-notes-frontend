@@ -6,13 +6,14 @@ import Col from "react-bootstrap/Col";
 import Nav from "react-bootstrap/Nav";
 import Axios from "axios";
 
-class Sidebar extends Component {
+class Home extends Component {
   constructor() {
     super();
 
     this.handleClick = this.handleClick.bind(this);
-    this.onSelectedNoteChange = this.onSelectedNoteChange.bind(this);
+    this.onSelectedNotebookChange = this.onSelectedNoteChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.onSelectedNoteChange = this.onSelectedNoteChange.bind(this);
   }
 
   componentDidMount() {
@@ -46,6 +47,12 @@ class Sidebar extends Component {
     });
   }
 
+  onSelectedNotebookChange(id) {
+    this.setState({
+      selectedNotebook: id,
+    });
+  }
+
   onSelectedNoteChange(id) {
     this.setState({
       selectedNoteId: id,
@@ -53,18 +60,16 @@ class Sidebar extends Component {
   }
 
   handleChange(event) {
-    console.log(event);
     const { name, value } = event.target;
     this.setState((prevState) => {
       const notebookIndex = prevState.notebooks.findIndex(
         (notebook) => notebook._id === prevState.selectedNotebookId
       );
-      //console.log("notebook index", notebookIndex);
+
       const noteIndex = prevState.notebooks[notebookIndex].notes.findIndex(
         (note) => note._id === prevState.selectedNoteId
       );
 
-      //console.log("note index", noteIndex);
       let newNotebooks = [...prevState.notebooks];
       if (name === "noteContent")
         newNotebooks[notebookIndex].notes[noteIndex] = {
@@ -94,18 +99,6 @@ class Sidebar extends Component {
     return (
       <Container fluid>
         <Row>
-          <div>
-            <h1>Home</h1>
-            <h1>Status: {this.props.loggedInStatus}</h1>
-            <h1>username: {this.props.user.username}</h1>
-            <h1>
-              {this.state.selectedNotebook
-                ? this.state.selectedNotebook[0].title
-                : ""}
-            </h1>
-          </div>
-        </Row>
-        <Row>
           <Col style={{}} className="Nav-background col-auto">
             <Nav
               className="flex-column vh-100 overflow-auto"
@@ -114,12 +107,13 @@ class Sidebar extends Component {
               {listNotebooks}
             </Nav>
           </Col>
-          <Col id="notebook">
+          <Col id="notebook" className="mt-5">
             <Notebook
               notebooks={this.state.notebooks}
               selectedNoteId={this.state.selectedNoteId}
+              onSelectedNoteChange={this.state.onSelectedNoteChange}
               selectedNotebookId={this.state.selectedNotebookId}
-              onSelectedNoteChange={this.onSelectedNoteChange}
+              onSelectedNotebookChange={this.onSelectedNotebookChange}
               handleChange={this.handleChange}
             ></Notebook>
           </Col>
@@ -129,4 +123,4 @@ class Sidebar extends Component {
   }
 }
 
-export default Sidebar;
+export default Home;

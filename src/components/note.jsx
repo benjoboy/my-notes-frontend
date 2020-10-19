@@ -1,8 +1,48 @@
 import React, { Component } from "react";
 import { Button } from "react-bootstrap";
+import Axios from "axios";
 
 class Note extends Component {
+  constructor() {
+    super();
+
+    this.saveNote = this.saveNote.bind(this);
+  }
   state = {};
+
+  saveNote(event) {
+    event.preventDefault();
+
+    console.log("save");
+    let selectedNote;
+    let selectedNotebook = this.props.notebooks.find(
+      (notebook) => notebook._id === this.props.selectedNotebookId
+    );
+    selectedNote = selectedNotebook.notes.find(
+      (note) => note._id === this.props.selectedNoteId
+    );
+
+    Axios.put(
+      "http://localhost:9000/notebooks/" +
+        this.props.selectedNotebookId +
+        "/" +
+        this.props.selectedNoteId,
+      {
+        title: selectedNote.title,
+        content: selectedNote.content,
+      },
+      { withCredentials: true }
+    )
+      .then((response) => {
+        if (response.data.status === "updated") {
+          console.log("note updated", response);
+        }
+      })
+      .catch((error) => {
+        //TODO not updated message
+        console.log("err updating notebook", error);
+      });
+  }
 
   render() {
     let selectedNote;
@@ -18,8 +58,7 @@ class Note extends Component {
       <React.Fragment>
         {selectedNote ? (
           <div>
-            <h1>{selectedNote.content}</h1>
-            <form onSubmit={this.props.handleUpdateNote}>
+            <form onSubmit={this.saveNote}>
               <input
                 value={selectedNote.title}
                 className="form-control"
