@@ -1,6 +1,7 @@
 import Axios from "axios";
 import React, { Component } from "react";
 import {} from "react-router-dom";
+import { Navbar, Nav, NavDropdown } from "react-bootstrap";
 
 class NavBar extends Component {
   constructor(props) {
@@ -21,26 +22,36 @@ class NavBar extends Component {
       });
   }
   render() {
-    return (
-      <nav className="navbar navbar-light Nav-background p-3 mb-5">
-        <a className="navbar-brand" href="/">
-          My Notes
-        </a>
+    var dropdownItems;
+    if (this.props.loggedInStatus === "NOT_LOGGED_IN") {
+      dropdownItems = (
         <div>
-          <a className="navbar-brand" href="/login">
-            Login
-          </a>
-          <a className="navbar-brand" href="/register">
-            Register
-          </a>
-          <button
-            className="navbar-toggler"
-            onClick={() => this.handleLogoutClick()}
-          >
-            Logout
-          </button>
+          <NavDropdown.Item href="/login">Login</NavDropdown.Item>
+          <NavDropdown.Item href="/register">Register</NavDropdown.Item>
         </div>
-      </nav>
+      );
+    } else {
+      dropdownItems = (
+        <NavDropdown.Item onClick={this.handleLogoutClick}>
+          Logout
+        </NavDropdown.Item>
+      );
+    }
+    return (
+      // <nav className="navbar navbar-light Nav-background p-3 mb-5">
+      <Navbar collapseOnSelect className="Nav-background p-3 mb-5">
+        <Navbar.Brand href="/">My notes</Navbar.Brand>
+        <Nav className="ml-auto">
+          <NavDropdown
+            title={
+              this.props.user.username ? this.props.user.username : "Dropdown"
+            }
+            alignRight
+          >
+            {dropdownItems}
+          </NavDropdown>
+        </Nav>
+      </Navbar>
     );
   }
 }

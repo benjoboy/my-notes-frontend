@@ -43,7 +43,6 @@ class App extends Component {
             user: {},
           });
         }
-        console.log("logged in response: ", response);
       })
       .catch((error) => {
         console.log("check login error");
@@ -75,13 +74,21 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
-        <NavBar handleLogout={this.handleLogout} />
+        <NavBar
+          handleLogout={this.handleLogout}
+          user={this.state.user}
+          loggedInStatus={this.state.loggedInStatus}
+        />
         <Switch>
           <Route
             path="/"
             exact
             render={(props) => (
-              <Home {...props} loggedInStatus={this.state.loggedInStatus} />
+              <Home
+                {...props}
+                loggedInStatus={this.state.loggedInStatus}
+                user={this.state.user}
+              />
             )}
           />
           <Route

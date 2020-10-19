@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import axios from "axios";
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
 
     this.state = {
       username: "",
@@ -78,7 +78,7 @@ class Login extends Component {
             </label>
           </div>
           <button type="submit" className="btn btn-secondary">
-            Sign up
+            Sign in
           </button>
         </form>
       </div>
