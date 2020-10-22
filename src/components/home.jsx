@@ -11,9 +11,8 @@ class Home extends Component {
     super();
 
     this.handleClick = this.handleClick.bind(this);
-    this.onSelectedNotebookChange = this.onSelectedNoteChange.bind(this);
-    this.handleChange = this.handleChange.bind(this);
     this.onSelectedNoteChange = this.onSelectedNoteChange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -29,6 +28,22 @@ class Home extends Component {
         this.setState({
           notebooks: response.data,
         });
+        if (
+          this.state.selectedNotebookId === "" &&
+          this.state.notebooks.length > 0
+        ) {
+          this.setState({
+            selectedNotebookId: this.state.notebooks[0]._id,
+          });
+          if (
+            this.state.selectedNoteId === "" &&
+            this.state.notebooks[0].notes.length > 0
+          ) {
+            this.setState({
+              selectedNoteId: this.state.notebooks[0].notes[0]._id,
+            });
+          }
+        }
       })
       .catch((error) => {
         console.log("error getting notebooks");
@@ -42,15 +57,21 @@ class Home extends Component {
   };
 
   handleClick(id) {
-    this.setState({
-      selectedNotebookId: id,
-    });
-  }
+    if (this.state.selectedNotebookId !== id) {
+      let selectedNotebook = this.state.notebooks.find(
+        (notebook) => notebook._id === id
+      );
+      let noteId;
 
-  onSelectedNotebookChange(id) {
-    this.setState({
-      selectedNotebook: id,
-    });
+      if (selectedNotebook.notes.length > 0) {
+        noteId = selectedNotebook.notes[0]._id;
+      } else noteId = "";
+
+      this.setState({
+        selectedNotebookId: id,
+        selectedNoteId: noteId,
+      });
+    }
   }
 
   onSelectedNoteChange(id) {
@@ -107,13 +128,12 @@ class Home extends Component {
               {listNotebooks}
             </Nav>
           </Col>
-          <Col id="notebook" className="mt-5">
+          <Col id="notebook" className="mt-4">
             <Notebook
               notebooks={this.state.notebooks}
               selectedNoteId={this.state.selectedNoteId}
-              onSelectedNoteChange={this.state.onSelectedNoteChange}
+              onSelectedNoteChange={this.onSelectedNoteChange}
               selectedNotebookId={this.state.selectedNotebookId}
-              onSelectedNotebookChange={this.onSelectedNotebookChange}
               handleChange={this.handleChange}
             ></Notebook>
           </Col>

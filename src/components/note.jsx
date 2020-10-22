@@ -8,7 +8,6 @@ class Note extends Component {
 
     this.saveNote = this.saveNote.bind(this);
   }
-  state = {};
 
   saveNote(event) {
     event.preventDefault();

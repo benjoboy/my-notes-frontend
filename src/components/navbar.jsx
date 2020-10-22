@@ -32,7 +32,7 @@ class NavBar extends Component {
       );
     } else {
       dropdownItems = (
-        <NavDropdown.Item onClick={this.handleLogoutClick}>
+        <NavDropdown.Item href="/" onClick={this.handleLogoutClick}>
           Logout
         </NavDropdown.Item>
       );

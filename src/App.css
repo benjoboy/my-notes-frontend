@@ -42,6 +42,10 @@
   color: 85d48c;
 }
 
+.Sidebar-background {
+  background-color: rgb(156, 154, 154);
+}
+
 .linkText {
   color: black;
 }

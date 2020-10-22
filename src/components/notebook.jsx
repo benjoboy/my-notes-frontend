@@ -3,8 +3,6 @@ import { Container, Nav, Col, Row } from "react-bootstrap";
 import Note from "./note";
 
 class Notebook extends Component {
-  state = {};
-
   render() {
     let selectedNotebook = this.props.notebooks.find(
       (notebook) => notebook._id === this.props.selectedNotebookId
@@ -14,9 +12,7 @@ class Notebook extends Component {
     if (this.props.selectedNotebookId) {
       notesList = selectedNotebook.notes.map((note) => (
         <Nav.Item key={note._id} className="border border-secondary">
-          <Nav.Link
-            onClick={() => this.props.onSelectedNotebookChange(note._id)}
-          >
+          <Nav.Link onClick={() => this.props.onSelectedNoteChange(note._id)}>
             {note.title}
           </Nav.Link>
         </Nav.Item>
