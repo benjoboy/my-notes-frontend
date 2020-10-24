@@ -5,14 +5,18 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Nav from "react-bootstrap/Nav";
 import Axios from "axios";
+import { Button } from "react-bootstrap";
+import AddNotebookModal from "./addNotebookModal";
 
 class Home extends Component {
   constructor() {
     super();
 
+    //this.handleModalSave = this.handleModalSave(this);
     this.handleClick = this.handleClick.bind(this);
     this.onSelectedNoteChange = this.onSelectedNoteChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.addModalClose = this.addModalClose.bind(this);
   }
 
   componentDidMount() {
@@ -54,6 +58,7 @@ class Home extends Component {
     selectedNotebookId: "",
     selectedNoteId: "",
     notebooks: [],
+    modalShow: false,
   };
 
   handleClick(id) {
@@ -107,6 +112,36 @@ class Home extends Component {
       return { newNotebooks };
     });
   }
+
+  addModalClose(title) {
+    if (title) {
+      this.handleModalSave(title);
+    }
+    this.setState({
+      modalShow: false,
+    });
+  }
+
+  handleModalSave(title) {
+    Axios.post(
+      "http://localhost:9000/notebooks",
+      {
+        title: title,
+      },
+      {
+        withCredentials: true,
+      }
+    )
+      .then((response) => {
+        if (response.data.status === "created") {
+          this.getNotebooks();
+        }
+      })
+      .catch((error) => {
+        console.log("error adding a notebook");
+      });
+  }
+
   render() {
     const listNotebooks = this.state.notebooks.map((notebook) => (
       <Nav.Link
@@ -126,6 +161,17 @@ class Home extends Component {
               style={{ width: "150px" }}
             >
               {listNotebooks}
+              <Button
+                className="btn btn-dark"
+                onClick={() => this.setState({ modalShow: true })}
+              >
+                + Notebook
+              </Button>
+              <AddNotebookModal
+                show={this.state.modalShow}
+                onHide={this.addModalClose}
+                animation={false} //stops the "findDOMNode" warning
+              />
             </Nav>
           </Col>
           <Col id="notebook" className="mt-4">
@@ -138,6 +184,7 @@ class Home extends Component {
             ></Notebook>
           </Col>
         </Row>
+        <Row></Row>
       </Container>
     );
   }
