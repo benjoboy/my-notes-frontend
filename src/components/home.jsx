@@ -12,7 +12,6 @@ class Home extends Component {
   constructor() {
     super();
 
-    //this.handleModalSave = this.handleModalSave(this);
     this.handleClick = this.handleClick.bind(this);
     this.onSelectedNoteChange = this.onSelectedNoteChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
@@ -29,25 +28,30 @@ class Home extends Component {
     })
       .then((response) => {
         console.log("res:", response);
-        this.setState({
-          notebooks: response.data,
-        });
-        if (
-          this.state.selectedNotebookId === "" &&
-          this.state.notebooks.length > 0
-        ) {
-          this.setState({
-            selectedNotebookId: this.state.notebooks[0]._id,
-          });
-          if (
-            this.state.selectedNoteId === "" &&
-            this.state.notebooks[0].notes.length > 0
-          ) {
-            this.setState({
-              selectedNoteId: this.state.notebooks[0].notes[0]._id,
-            });
+        this.setState(
+          {
+            notebooks: response.data,
+          },
+          function () {
+            console.log("setState");
+            if (
+              this.state.selectedNotebookId === "" &&
+              this.state.notebooks.length > 0
+            ) {
+              this.setState({
+                selectedNotebookId: this.state.notebooks[0]._id,
+              });
+              if (
+                this.state.selectedNoteId === "" &&
+                this.state.notebooks[0].notes.length > 0
+              ) {
+                this.setState({
+                  selectedNoteId: this.state.notebooks[0].notes[0]._id,
+                });
+              }
+            }
           }
-        }
+        );
       })
       .catch((error) => {
         console.log("error getting notebooks");
@@ -77,6 +81,7 @@ class Home extends Component {
         selectedNoteId: noteId,
       });
     }
+    console.log(this.state.selectedNotebookId);
   }
 
   onSelectedNoteChange(id) {
@@ -142,6 +147,44 @@ class Home extends Component {
       });
   }
 
+  addNote() {
+    if (this.props.selectedNotebookId !== "") {
+      Axios.post(
+        "http://localhost:9000/notebooks/addNote",
+        {
+          id: this.state.selectedNotebookId,
+          title: "New Note",
+          content: "",
+        },
+        {
+          withCredentials: true,
+        }
+      )
+        .then((response) => {
+          if (response.data.status === "created") {
+            this.getNotebooks();
+
+            //TODO select latest note
+          }
+        })
+        .catch((error) => {
+          console.log("error creating a note");
+        });
+    }
+  }
+
+  getTheLatestNote() {
+    let selectedNotebook = this.state.notebooks.find(
+      (notebook) => notebook._id === this.state.selectedNotebookId
+    );
+    console.log(selectedNotebook);
+    let latest = selectedNotebook.notes.reduce((r, o) =>
+      o.editDate > r.editDate ? o : r
+    );
+    console.log("last ", latest);
+    return latest;
+  }
+
   render() {
     const listNotebooks = this.state.notebooks.map((notebook) => (
       <Nav.Link
@@ -175,13 +218,21 @@ class Home extends Component {
             </Nav>
           </Col>
           <Col id="notebook" className="mt-4">
+            {this.props.selectedNotebookId !== "" ? (
+              <div className="">
+                <Button className="btn btn-dark" onClick={() => this.addNote()}>
+                  + Note
+                </Button>
+              </div>
+            ) : null}
             <Notebook
+              handleGetNotebooks={this.handleGetNotebooks}
               notebooks={this.state.notebooks}
               selectedNoteId={this.state.selectedNoteId}
               onSelectedNoteChange={this.onSelectedNoteChange}
               selectedNotebookId={this.state.selectedNotebookId}
               handleChange={this.handleChange}
-            ></Notebook>
+            />
           </Col>
         </Row>
         <Row></Row>
