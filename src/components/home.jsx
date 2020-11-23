@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import Notebook from "./notebook";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Nav from "react-bootstrap/Nav";
 import Axios from "axios";
-import { Button } from "react-bootstrap";
 import AddNotebookModal from "./addNotebookModal";
+import { Col, Container, Row, Button } from "react-bootstrap";
+import Note from "./note";
 
 class Home extends Component {
   constructor() {
@@ -187,29 +185,27 @@ class Home extends Component {
 
   render() {
     const listNotebooks = this.state.notebooks.map((notebook) => (
-      <Nav.Link
-        key={notebook._id}
-        className="linkText"
-        onClick={() => this.handleClick(notebook._id)}
-      >
-        {notebook.title}
-      </Nav.Link>
+      <Nav.Item key={notebook._id}>
+        <Nav.Link
+          className="linkText"
+          onClick={() => this.handleClick(notebook._id)}
+        >
+          {notebook.title}
+        </Nav.Link>
+      </Nav.Item>
     ));
     return (
-      <Container fluid>
-        <Row>
-          <Col style={{}} className="Nav-background col-auto">
-            <Nav
-              className="flex-column vh-100 overflow-auto"
-              style={{ width: "150px" }}
-            >
-              {listNotebooks}
-              <Button
-                className="btn btn-dark"
+      <Container fluid className="">
+        <Row className="">
+          <Col xs={2} id="sidebar-wrapper">
+            <Nav className="col-12 d-none d-md-block sidebar mt-3" justify>
+              <Nav.Link
+                className="btn btn-success ml-2"
                 onClick={() => this.setState({ modalShow: true })}
               >
                 + Notebook
-              </Button>
+              </Nav.Link>
+              {listNotebooks}
               <AddNotebookModal
                 show={this.state.modalShow}
                 onHide={this.addModalClose}
@@ -217,10 +213,14 @@ class Home extends Component {
               />
             </Nav>
           </Col>
-          <Col id="notebook" className="mt-4">
-            {this.props.selectedNotebookId !== "" ? (
-              <div className="">
-                <Button className="btn btn-dark" onClick={() => this.addNote()}>
+          <Col xs={2} id="sidebar-wrapper">
+            {this.state.selectedNotebookId !== "" &&
+            this.props.loggedInStatus === "LOGGED_IN" ? (
+              <div className="ml-2 mt-3">
+                <Button
+                  className="btn btn-success"
+                  onClick={() => this.addNote()}
+                >
                   + Note
                 </Button>
               </div>
@@ -234,7 +234,16 @@ class Home extends Component {
               handleChange={this.handleChange}
             />
           </Col>
+          <Col xs={8} className="mt-3">
+            <Note
+              notebooks={this.state.notebooks}
+              selectedNoteId={this.state.selectedNoteId}
+              selectedNotebookId={this.state.selectedNotebookId}
+              handleChange={this.handleChange}
+            ></Note>
+          </Col>
         </Row>
+        <Row></Row>
         <Row></Row>
       </Container>
     );

@@ -39,7 +39,10 @@ class NavBar extends Component {
     }
     return (
       // <nav className="navbar navbar-light Nav-background p-3 mb-5">
-      <Navbar collapseOnSelect className="Nav-background  p-3">
+      <Navbar
+        collapseOnSelect
+        className="navbar-expand navbar-light Nav-background"
+      >
         <Navbar.Brand href="/">My notes</Navbar.Brand>
         <Nav className="ml-auto">
           <NavDropdown
