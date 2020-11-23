@@ -3,7 +3,7 @@ import Notebook from "./notebook";
 import Nav from "react-bootstrap/Nav";
 import Axios from "axios";
 import AddNotebookModal from "./addNotebookModal";
-import { Col, Container, Row, Button } from "react-bootstrap";
+import { Col, Container, Row, Button, Dropdown } from "react-bootstrap";
 import Note from "./note";
 
 class Home extends Component {
@@ -14,6 +14,7 @@ class Home extends Component {
     this.onSelectedNoteChange = this.onSelectedNoteChange.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.addModalClose = this.addModalClose.bind(this);
+    this.deleteNote = this.deleteNote.bind(this);
   }
 
   componentDidMount() {
@@ -171,6 +172,41 @@ class Home extends Component {
     }
   }
 
+  deleteNote() {
+    Axios.delete(
+      "http://localhost:9000/notebooks/" +
+        this.state.selectedNotebookId +
+        "/deleteNote/" +
+        this.state.selectedNoteId,
+      {
+        withCredentials: true,
+      }
+    )
+      .then((res) => {
+        console.log("note deleted");
+        this.getNotebooks();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  deleteNotebook(id) {
+    Axios.delete("http://localhost:9000/notebooks/" + id, {
+      withCredentials: true,
+    })
+      .then((res) => {
+        console.log("notebook deleted");
+        this.setState({
+          selectedNotebookId: "",
+        });
+        this.getNotebooks();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   getTheLatestNote() {
     let selectedNotebook = this.state.notebooks.find(
       (notebook) => notebook._id === this.state.selectedNotebookId
@@ -185,25 +221,38 @@ class Home extends Component {
 
   render() {
     const listNotebooks = this.state.notebooks.map((notebook) => (
-      <Nav.Item key={notebook._id}>
-        <Nav.Link
-          className="linkText"
-          onClick={() => this.handleClick(notebook._id)}
-        >
-          {notebook.title}
-        </Nav.Link>
-      </Nav.Item>
+      <div key={notebook._id}>
+        <Dropdown className="d-inline float-right">
+          <Dropdown.Toggle variant="muted">
+            <span></span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu size="xs" title="">
+            <Dropdown.Item onClick={() => this.deleteNotebook(notebook._id)}>
+              {" "}
+              delete
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+        <Nav.Item className="mt-1">
+          <Nav.Link
+            className="linkText"
+            onClick={() => this.handleClick(notebook._id)}
+          >
+            {notebook.title}&nbsp;
+          </Nav.Link>
+        </Nav.Item>
+      </div>
     ));
     return (
       <Container fluid className="">
         <Row className="">
-          <Col xs={2} id="sidebar-wrapper">
-            <Nav className="col-12 d-none d-md-block sidebar mt-3" justify>
+          <Col xs={4} md={2} id="sidebar-wrapper">
+            <Nav className="col-12 d-block sidebar mt-3">
               <Nav.Link
                 className="btn btn-success ml-2"
                 onClick={() => this.setState({ modalShow: true })}
               >
-                + Notebook
+                +&nbsp;Notebook
               </Nav.Link>
               {listNotebooks}
               <AddNotebookModal
@@ -213,7 +262,7 @@ class Home extends Component {
               />
             </Nav>
           </Col>
-          <Col xs={2} id="sidebar-wrapper">
+          <Col xs={4} md={2} id="sidebar-wrapper">
             {this.state.selectedNotebookId !== "" &&
             this.props.loggedInStatus === "LOGGED_IN" ? (
               <div className="ml-2 mt-3">
@@ -234,12 +283,13 @@ class Home extends Component {
               handleChange={this.handleChange}
             />
           </Col>
-          <Col xs={8} className="mt-3">
+          <Col xs={4} md={8} className="mt-3">
             <Note
               notebooks={this.state.notebooks}
               selectedNoteId={this.state.selectedNoteId}
               selectedNotebookId={this.state.selectedNotebookId}
               handleChange={this.handleChange}
+              deleteNote={this.deleteNote}
             ></Note>
           </Col>
         </Row>

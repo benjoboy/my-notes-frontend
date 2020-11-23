@@ -75,3 +75,11 @@
   font-size: 0.9em;
   color: black;
 }
+
+textarea {
+  min-height: 40vh;
+}
+
+.btn {
+  font-size: xx-small;
+}

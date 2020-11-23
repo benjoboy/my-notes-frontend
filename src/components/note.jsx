@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button } from "react-bootstrap";
+import { Button, ButtonGroup } from "react-bootstrap";
 import Axios from "axios";
 
 class Note extends Component {
@@ -64,15 +64,23 @@ class Note extends Component {
                 name="noteTitle"
                 onChange={this.props.handleChange}
               />
-              <input
+              <textarea
                 value={selectedNote.content}
                 className="form-control"
                 name="noteContent"
                 onChange={this.props.handleChange}
               />
-              <Button type="submit" className="btn btn-success">
-                Save Note
-              </Button>
+              <ButtonGroup>
+                <Button
+                  onClick={this.props.deleteNote}
+                  className="btn btn-danger"
+                >
+                  Delete Note
+                </Button>
+                <Button type="submit" className="btn btn-success">
+                  Save Note
+                </Button>
+              </ButtonGroup>
             </form>
           </div>
         ) : null}

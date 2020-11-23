@@ -3,8 +3,6 @@ import { Nav } from "react-bootstrap";
 
 class Notebook extends Component {
   render() {
-    console.log("rendered");
-
     let selectedNotebook = this.props.notebooks.find(
       (notebook) => notebook._id === this.props.selectedNotebookId
     );
@@ -23,7 +21,7 @@ class Notebook extends Component {
       ));
     }
 
-    return <Nav className="col-12 d-none d-md-block sidebar">{notesList}</Nav>;
+    return <Nav className="col-12 d-block sidebar">{notesList}</Nav>;
   }
 }
 
