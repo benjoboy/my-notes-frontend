@@ -76,10 +76,16 @@
   color: black;
 }
 
-textarea {
-  min-height: 40vh;
+.ck-editor__editable_inline {
+  min-height: 50vh;
 }
 
 .btn {
   font-size: xx-small;
+}
+
+@media (max-width: 576px) {
+  .noteOrder {
+    order: -2;
+  }
 }

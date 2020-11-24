@@ -15,6 +15,7 @@ class Home extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.addModalClose = this.addModalClose.bind(this);
     this.deleteNote = this.deleteNote.bind(this);
+    this.handleEditorChange = this.handleEditorChange.bind(this);
   }
 
   componentDidMount() {
@@ -26,13 +27,11 @@ class Home extends Component {
       withCredentials: true,
     })
       .then((response) => {
-        console.log("res:", response);
         this.setState(
           {
             notebooks: response.data,
           },
           function () {
-            console.log("setState");
             if (
               this.state.selectedNotebookId === "" &&
               this.state.notebooks.length > 0
@@ -80,12 +79,32 @@ class Home extends Component {
         selectedNoteId: noteId,
       });
     }
-    console.log(this.state.selectedNotebookId);
   }
 
   onSelectedNoteChange(id) {
     this.setState({
       selectedNoteId: id,
+    });
+  }
+
+  handleEditorChange(event, editor) {
+    this.setState((prevState) => {
+      const notebookIndex = prevState.notebooks.findIndex(
+        (notebook) => notebook._id === prevState.selectedNotebookId
+      );
+
+      const noteIndex = prevState.notebooks[notebookIndex].notes.findIndex(
+        (note) => note._id === prevState.selectedNoteId
+      );
+
+      let newNotebooks = [...prevState.notebooks];
+
+      newNotebooks[notebookIndex].notes[noteIndex] = {
+        ...newNotebooks[notebookIndex].notes[noteIndex],
+        content: editor.getData(),
+      };
+
+      return { newNotebooks };
     });
   }
 
@@ -183,7 +202,6 @@ class Home extends Component {
       }
     )
       .then((res) => {
-        console.log("note deleted");
         this.getNotebooks();
       })
       .catch((err) => {
@@ -196,7 +214,6 @@ class Home extends Component {
       withCredentials: true,
     })
       .then((res) => {
-        console.log("notebook deleted");
         this.setState({
           selectedNotebookId: "",
         });
@@ -211,11 +228,9 @@ class Home extends Component {
     let selectedNotebook = this.state.notebooks.find(
       (notebook) => notebook._id === this.state.selectedNotebookId
     );
-    console.log(selectedNotebook);
     let latest = selectedNotebook.notes.reduce((r, o) =>
       o.editDate > r.editDate ? o : r
     );
-    console.log("last ", latest);
     return latest;
   }
 
@@ -245,8 +260,8 @@ class Home extends Component {
     ));
     return (
       <Container fluid className="">
-        <Row className="">
-          <Col xs={4} md={2} id="sidebar-wrapper">
+        <Row className="no-gutters">
+          <Col xs={6} sm={4} lg={2} id="sidebar-wrapper">
             <Nav className="col-12 d-block sidebar mt-3">
               <Nav.Link
                 className="btn btn-success ml-2"
@@ -262,7 +277,7 @@ class Home extends Component {
               />
             </Nav>
           </Col>
-          <Col xs={4} md={2} id="sidebar-wrapper">
+          <Col xs={6} sm={4} lg={2} id="sidebar-wrapper">
             {this.state.selectedNotebookId !== "" &&
             this.props.loggedInStatus === "LOGGED_IN" ? (
               <div className="ml-2 mt-3">
@@ -283,14 +298,15 @@ class Home extends Component {
               handleChange={this.handleChange}
             />
           </Col>
-          <Col xs={4} md={8} className="mt-3">
+          <Col xs={12} sm={4} lg={8} className="mt-3 noteOrder">
             <Note
               notebooks={this.state.notebooks}
               selectedNoteId={this.state.selectedNoteId}
               selectedNotebookId={this.state.selectedNotebookId}
               handleChange={this.handleChange}
               deleteNote={this.deleteNote}
-            ></Note>
+              handleEditorChange={this.handleEditorChange}
+            />
           </Col>
         </Row>
         <Row></Row>

@@ -1,6 +1,9 @@
 import React, { Component } from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import Axios from "axios";
+import moment from "moment";
+import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 class Note extends Component {
   constructor() {
@@ -34,11 +37,9 @@ class Note extends Component {
     )
       .then((response) => {
         if (response.data.status === "updated") {
-          console.log("note updated", response);
         }
       })
       .catch((error) => {
-        //TODO not updated message
         console.log("err updating notebook", error);
       });
   }
@@ -53,6 +54,7 @@ class Note extends Component {
         (note) => note._id === this.props.selectedNoteId
       );
     }
+
     return (
       <React.Fragment>
         {selectedNote ? (
@@ -63,14 +65,14 @@ class Note extends Component {
                 className="form-control"
                 name="noteTitle"
                 onChange={this.props.handleChange}
+                style={{ fontWeight: "bold" }}
               />
-              <textarea
-                value={selectedNote.content}
-                className="form-control"
-                name="noteContent"
-                onChange={this.props.handleChange}
+              <CKEditor
+                editor={ClassicEditor}
+                data={selectedNote.content}
+                onChange={this.props.handleEditorChange}
               />
-              <ButtonGroup>
+              <ButtonGroup className="pt-2">
                 <Button
                   onClick={this.props.deleteNote}
                   className="btn btn-danger"
@@ -81,6 +83,10 @@ class Note extends Component {
                   Save Note
                 </Button>
               </ButtonGroup>
+              <p className="d-inline pl-3">
+                Last saved:{" "}
+                {moment(selectedNote.editDate).format("h:s DD.MM.YYYY")}
+              </p>
             </form>
           </div>
         ) : null}
