@@ -3,9 +3,9 @@ import "./App.css";
 import NavBar from "./components/navbar";
 import Register from "./components/register";
 import Login from "./components/login";
-import Home from "./components/home";
 import { Switch, Route, withRouter } from "react-router-dom";
 import Axios from "axios";
+import DashBoard from "./components/dashboard";
 
 class App extends Component {
   constructor(props) {
@@ -80,17 +80,30 @@ class App extends Component {
           loggedInStatus={this.state.loggedInStatus}
         />
         <Switch>
-          <Route
-            path="/"
-            exact
-            render={(props) => (
-              <Home
-                {...props}
-                loggedInStatus={this.state.loggedInStatus}
-                user={this.state.user}
-              />
-            )}
-          />
+          {this.state.loggedInStatus === "LOGGED_IN" ? (
+            <Route
+              path="/"
+              exact
+              render={(props) => (
+                <DashBoard
+                  {...props}
+                  loggedInStatus={this.state.loggedInStatus}
+                  user={this.state.user}
+                />
+              )}
+            />
+          ) : (
+            <Route
+              path="/"
+              exact
+              render={(props) => (
+                <Login
+                  {...props}
+                  handleSuccessfulAuth={this.handleSuccessfulAuth}
+                />
+              )}
+            />
+          )}
           <Route
             path="/register"
             exact

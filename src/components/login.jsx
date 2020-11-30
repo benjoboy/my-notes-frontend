@@ -45,7 +45,7 @@ class Login extends Component {
   render() {
     return (
       <div className="container-sm mt-5">
-        <h2>Sign up</h2>
+        <h2>Sign in</h2>
         <form onSubmit={this.handleSubmit}>
           <div className="form-group">
             <label>Username:</label>

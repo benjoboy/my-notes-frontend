@@ -1,20 +1,52 @@
 import React, { Component } from "react";
 import { Button, ButtonGroup } from "react-bootstrap";
 import Axios from "axios";
-import moment from "moment";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+
+const SavingState = Object.freeze({
+  NOT_SAVED: 0,
+  SAVING: 1,
+  SAVED: 2,
+});
 
 class Note extends Component {
   constructor() {
     super();
 
     this.saveNote = this.saveNote.bind(this);
+    this.update = this.update.bind(this);
   }
 
-  saveNote(event) {
-    event.preventDefault();
+  state = {
+    saving: SavingState.NOT_SAVED,
+  };
 
+  componentDidMount() {
+    this.timer = null;
+  }
+
+  update(event, editor) {
+    if (editor == null) event.persist();
+    console.log(event);
+    clearTimeout(this.timer);
+    this.setState({ saving: SavingState.NOT_SAVED });
+
+    this.timer = setTimeout(() => {
+      this.setState({ saving: SavingState.SAVING });
+      if (editor != null) {
+        console.log("hello");
+        this.props.handleEditorChange(event, editor);
+      } else {
+        console.log("hello2");
+        this.props.handleChange(event);
+      }
+      this.saveNote(event);
+      this.setState({ saving: SavingState.SAVED });
+    }, 500);
+  }
+
+  saveNote() {
     console.log("save");
     let selectedNote;
     let selectedNotebook = this.props.notebooks.find(
@@ -70,7 +102,7 @@ class Note extends Component {
               <CKEditor
                 editor={ClassicEditor}
                 data={selectedNote.content}
-                onChange={this.props.handleEditorChange}
+                onChange={this.update}
               />
               <ButtonGroup className="pt-2">
                 <Button
@@ -79,14 +111,8 @@ class Note extends Component {
                 >
                   Delete Note
                 </Button>
-                <Button type="submit" className="btn btn-success">
-                  Save Note
-                </Button>
               </ButtonGroup>
-              <p className="d-inline pl-3">
-                Last saved:{" "}
-                {moment(selectedNote.editDate).format("h:s DD.MM.YYYY")}
-              </p>
+              <AutoSaveDisplay saving={this.state.saving} />
             </form>
           </div>
         ) : null}
@@ -96,3 +122,18 @@ class Note extends Component {
 }
 
 export default Note;
+
+const AutoSaveDisplay = ({ saving }) => {
+  let display;
+  switch (saving) {
+    case SavingState.SAVING:
+      display = <em>saving...</em>;
+      break;
+    case SavingState.SAVED:
+      display = "saved!";
+      break;
+    default:
+      display = <br />;
+  }
+  return <div className="d-inline pl-3">{display}</div>;
+};

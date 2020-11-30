@@ -3,10 +3,10 @@ import Notebook from "./notebook";
 import Nav from "react-bootstrap/Nav";
 import Axios from "axios";
 import AddNotebookModal from "./addNotebookModal";
-import { Col, Container, Row, Button, Dropdown } from "react-bootstrap";
+import { Col, Container, Row, Dropdown } from "react-bootstrap";
 import Note from "./note";
 
-class Home extends Component {
+class DashBoard extends Component {
   constructor() {
     super();
 
@@ -109,6 +109,7 @@ class Home extends Component {
   }
 
   handleChange(event) {
+    console.log(event);
     const { name, value } = event.target;
     this.setState((prevState) => {
       const notebookIndex = prevState.notebooks.findIndex(
@@ -216,6 +217,7 @@ class Home extends Component {
       .then((res) => {
         this.setState({
           selectedNotebookId: "",
+          selectedNoteId: "",
         });
         this.getNotebooks();
       })
@@ -263,12 +265,14 @@ class Home extends Component {
         <Row className="no-gutters">
           <Col xs={6} sm={4} lg={2} id="sidebar-wrapper">
             <Nav className="col-12 d-block sidebar mt-3">
-              <Nav.Link
-                className="btn btn-success ml-2"
-                onClick={() => this.setState({ modalShow: true })}
-              >
-                +&nbsp;Notebook
-              </Nav.Link>
+              <Nav.Item>
+                <Nav.Link
+                  className="btn btn-success ml-2"
+                  onClick={() => this.setState({ modalShow: true })}
+                >
+                  +&nbsp;Notebook
+                </Nav.Link>
+              </Nav.Item>
               {listNotebooks}
               <AddNotebookModal
                 show={this.state.modalShow}
@@ -278,15 +282,14 @@ class Home extends Component {
             </Nav>
           </Col>
           <Col xs={6} sm={4} lg={2} id="sidebar-wrapper">
-            {this.state.selectedNotebookId !== "" &&
-            this.props.loggedInStatus === "LOGGED_IN" ? (
-              <div className="ml-2 mt-3">
-                <Button
+            {this.state.selectedNotebookId !== "" ? (
+              <div className="ml-3 mt-3 pr-3">
+                <Nav.Link
                   className="btn btn-success"
                   onClick={() => this.addNote()}
                 >
                   + Note
-                </Button>
+                </Nav.Link>
               </div>
             ) : null}
             <Notebook
@@ -316,4 +319,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default DashBoard;
